@@ -16,8 +16,14 @@ import YukinaConfig from "./yukina.config";
 import pagefind from "astro-pagefind";
 
 // https://astro.build/config
+
+// Determine the correct base path based on repository
+const isUserPage =
+  process.env.GITHUB_REPOSITORY === "serendibecolab/serandibecolab.github.io";
+const BASE_PATH = isUserPage ? "/" : "/";
+
 export default defineConfig({
-  base: "/",
+  base: BASE_PATH,
   site: "https://serendibecolab.github.io",
   output: "static",
   image: {
