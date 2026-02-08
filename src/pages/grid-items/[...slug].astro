@@ -1,0 +1,43 @@
+---
+export const prerender = true;
+import { getCollection } from "astro:content";
+import PostLayout from "../../layouts/PostLayout.astro";
+import { render } from "astro:content";
+
+export async function getStaticPaths() {
+  const gridItems = await getCollection("gridItems");
+  
+  return gridItems.map((entry) => {
+    // For glob loader, extract filename without extension
+    const fullPath = entry.id; // e.g., "example-1.md" or "subdir/example-1.md"
+    const slug = fullPath.replace(/\.md$/, ''); // Remove .md extension
+    
+    return {
+      params: { slug: slug },
+      props: { entry },
+    };
+  });
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+// Handle images for both gridItems and services
+// Use coverImage if available, fall back to cover for gridItems
+const bannerImage = entry.data.coverImage || entry.data.cover;
+
+// Format image loop for both collections
+const formattedImageLoop = entry.data.imageLoop?.map(url => ({ 
+  src: url, 
+  focalPoint: "center" 
+})) || [];
+---
+
+<PostLayout
+  title={entry.data.title}
+  subTitle={entry.data.description}
+  bannerImage={bannerImage}
+  bannerImageLoop={formattedImageLoop}
+>
+  <Content />
+</PostLayout>

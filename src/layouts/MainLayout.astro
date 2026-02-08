@@ -1,0 +1,73 @@
+---
+import Base from "./BaseLayout.astro";
+import NavBar from "../components/NavBar.astro";
+import Banner from "../components/Banner.astro";
+
+import YukinaConfig from "../../yukina.config";
+import Footer from "../components/Footer.astro";
+import SideBar from "../components/SideBar.astro";
+
+export interface Props {
+  title?: string;
+  subTitle?: string;
+  bannerImage?: string;
+  slug?: string;
+  showAvatar?: boolean;
+  showCategoriesAndTags?: boolean;
+}
+
+const props = Astro.props;
+const { showAvatar = true, showCategoriesAndTags = true } = props;
+
+const isSidebarActive = showAvatar || showCategoriesAndTags;
+---
+
+<Base>
+  <NavBar />
+
+  <!-- Main banner for other pages -->
+  <Banner
+    title={props.title}
+    subTitle={props.subTitle}
+    slug={props.slug}
+    {...(props.bannerImage && { coverImage: { src: props.bannerImage, alt: props.title || "Cover Image" } })}
+  />
+
+  <div class="main-container my-10">
+    <div class:list={[
+      "flex",
+      "flex-row",
+      "items-start",
+      isSidebarActive ? "xl:space-x-4" : "justify-center"
+    ]}>
+      <div class:list={["side-bar", !isSidebarActive && "hidden"]}>
+        <SideBar showAvatar={showAvatar} showCategoriesAndTags={showCategoriesAndTags} />
+      </div>
+      <div class:list={[
+        "transition-leaving",
+        "space-y-8",
+        isSidebarActive ? "w-full" : "w-full mx-auto"
+      ]}>
+        <main class="content onload-animation">
+          <slot />
+        </main>
+        <Footer showAvatar={showAvatar} showCategoriesAndTags={showCategoriesAndTags} />
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .main-container {
+    @apply w-full md:min-w-[80%] md:max-w-[80%] lg:min-w-[var(--page-width-lg)] lg:max-w-[var(--page-width-lg)] xl:min-w-[var(--page-width-xl)] xl:max-w-[var(--page-width-xl)];
+    @apply md:mx-auto;
+  }
+
+  .side-bar {
+    @apply hidden min-w-[248px] xl:block;
+  }
+
+  .content {
+    @apply xl:w-[calc(var(--page-width-xl)-264px)];
+  }
+</style>

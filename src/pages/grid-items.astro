@@ -1,0 +1,12 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import ImageGrid from "../components/ImageGrid.astro";
+
+const title = "Image Grid";
+const description = "A collection of images.";
+const coverImage = "/images/IMG_7441.webp"; // Placeholder image (public path)
+---
+
+<MainLayout title={title} subTitle={description} bannerImage={coverImage}>
+  <ImageGrid />
+</MainLayout>

@@ -1,0 +1,15 @@
+[Unit]
+Description=Yukina Git Auto-Deploy Watcher
+After=network.target
+
+[Service]
+Type=simple
+# User=banumath # Consider running this service as a dedicated, unprivileged user for security.
+# If you uncomment the above line, ensure the user exists and has appropriate permissions.
+WorkingDirectory=/home/banumath/Projects/yukina # This path will be updated by initial-setup.sh
+ExecStart=/home/banumath/Projects/yukina/scripts/git-watcher.sh # This path will be updated by initial-setup.sh
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

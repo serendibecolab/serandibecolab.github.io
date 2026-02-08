@@ -1,0 +1,52 @@
+---
+import YukinaConfig from "../../yukina.config";
+
+interface ImageGridItem {
+  src: string;
+  alt: string;
+  title: string;
+  description: string;
+  href?: string;
+  size: 'small' | 'medium' | 'large';
+}
+
+const imageGridItems: ImageGridItem[] = YukinaConfig.homepageGridItems;
+---
+
+<div class="container mx-auto px-4 py-8">
+  <h2 class="text-3xl font-bold text-center mb-8 text-[var(--subtitle-color)]">Featured Content</h2>
+  <div id="image-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 auto-rows-[minmax(150px,_250px)]">
+    {imageGridItems.map((item, index) => (
+      <a
+        href={item.href || '#'}
+        class:list={[
+          "block group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-500 ease-in-out",
+          item.size === 'medium' && 'sm:col-span-2 md:col-span-2 lg:col-span-2',
+          item.size === 'large' && 'sm:col-span-2 md:col-span-3 lg:col-span-4 sm:row-span-2',
+        ]}
+        data-index={index}
+      >
+        <img
+          src={item.src}
+          alt={item.alt}
+          class="w-full h-full object-cover absolute inset-0 transform group-hover:scale-105 transition-transform duration-500 ease-in-out"
+        />
+        <!-- Mobile: Always show title, Desktop: Show on hover -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent md:bg-gradient-to-t md:from-black md:via-black/50 md:to-transparent md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 ease-in-out flex flex-col justify-end p-4">
+          <h3 class="text-white text-xl font-semibold mb-1">{item.title}</h3>
+          <p class="text-gray-300 text-sm md:block hidden">{item.description}</p>
+        </div>
+      </a>
+    ))}
+  </div>
+</div>
+
+<style>
+  /* Ensure mobile visibility */
+  @media (max-width: 768px) {
+    #image-grid a .absolute > h3 {
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+  }
+</style>

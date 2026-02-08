@@ -1,0 +1,168 @@
+---
+import Base from "../layouts/BaseLayout.astro";
+import NavBar from "../components/NavBar.astro";
+import Banner from "../components/Banner.astro";
+import SecondBanner from "../components/SecondBanner.astro";
+import ImageGrid from "../components/ImageGrid.astro";
+import ServiceCard from "../components/ServiceCard.astro";
+import YukinaConfig from "../../yukina.config";
+import Footer from "../components/Footer.astro";
+import SideBar from "../components/SideBar.astro";
+---
+
+<Base>
+  <NavBar />
+
+  <!-- Home page shows both banners at the top -->
+  <Banner />
+  <SecondBanner />
+
+  <div class="main-container my-10">
+    <div class="flex flex-row items-start justify-center">
+      <div class="transition-leaving space-y-8 w-full mx-auto">
+        <main class="content onload-animation">
+          <ImageGrid />
+          
+          <section class="container mx-auto px-4 py-8">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[var(--subtitle-color)]">Our Services</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {YukinaConfig.homepageServiceCards.map((service) => (
+                <ServiceCard
+                  title={service.title}
+                  description={service.description}
+                  coverImage={service.coverImage}
+                  href={service.href}
+                />
+              ))}
+            </div>
+          </section>
+        </main>
+        <Footer showAvatar={false} showCategoriesAndTags={false} />
+      </div>
+    </div>
+  </div>
+</Base>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const mainBanner = document.querySelector('.banner'); // First banner
+  const secondBanner = document.querySelector('#second-banner');
+  let isScrolling = false;
+  let scrollTimeout;
+
+  function isInMainBanner() {
+    if (!mainBanner) return false;
+    
+    const mainBannerRect = mainBanner.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    
+    // Check if any part of main banner is visible in viewport
+    return mainBannerRect.bottom > 0 && mainBannerRect.top < viewportHeight;
+  }
+
+  function scrollToSecondBanner() {
+    if (secondBanner && !isScrolling) {
+      isScrolling = true;
+      
+      // Calculate the position to scroll to (top of second banner)
+      const bannerRect = secondBanner.getBoundingClientRect();
+      const offsetTop = window.pageYOffset + bannerRect.top;
+      
+      // Smooth scroll to second banner
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+
+      // Reset scrolling flag after animation completes
+      setTimeout(() => {
+        isScrolling = false;
+      }, 1000);
+    }
+  }
+
+  function handleScroll(event) {
+    // Clear any existing timeout
+    clearTimeout(scrollTimeout);
+    
+    // Only proceed if not currently scrolling programmatically
+    if (isScrolling) return;
+    
+    // Set a timeout to handle the scroll
+    scrollTimeout = setTimeout(() => {
+      const currentScroll = window.pageYOffset;
+      
+      // Check if we're in the main banner area and scrolling down
+      if (isInMainBanner() && event.deltaY > 0) {
+        // Prevent default to stop normal scrolling
+        event.preventDefault();
+        scrollToSecondBanner();
+      }
+    }, 50);
+  }
+
+  function handleKeyDown(event) {
+    // Snap on down arrow or page down key when in main banner
+    if ((event.key === 'ArrowDown' || event.key === 'PageDown') && isInMainBanner()) {
+      event.preventDefault();
+      scrollToSecondBanner();
+    }
+  }
+
+  // For touch devices
+  let startY = 0;
+  let isTouchScrolling = false;
+  
+  document.addEventListener('touchstart', function(event) {
+    startY = event.touches[0].clientY;
+    isTouchScrolling = true;
+  });
+
+  document.addEventListener('touchmove', function(event) {
+    if (!isTouchScrolling || isScrolling) return;
+    
+    const currentY = event.touches[0].clientY;
+    const deltaY = startY - currentY; // Positive means scrolling down
+    
+    if (deltaY > 10 && isInMainBanner()) { // Minimum swipe distance
+      event.preventDefault();
+      scrollToSecondBanner();
+      isTouchScrolling = false;
+    }
+  });
+
+  document.addEventListener('touchend', function() {
+    isTouchScrolling = false;
+  });
+
+  // Add event listeners
+  if (mainBanner && secondBanner) {
+    window.addEventListener('wheel', handleScroll, { passive: false });
+    window.addEventListener('keydown', handleKeyDown);
+    
+    // Also handle scroll indicator click
+    const scrollIndicator = document.querySelector('.banner .scroll-indicator');
+    if (scrollIndicator) {
+      scrollIndicator.addEventListener('click', function() {
+        scrollToSecondBanner();
+      });
+    }
+  }
+});
+</script>
+
+<style>
+  .main-container {
+    @apply w-full md:min-w-[80%] md:max-w-[80%] lg:min-w-[var(--page-width-lg)] lg:max-w-[var(--page-width-lg)] xl:min-w-[var(--page-width-xl)] xl:max-w-[var(--page-width-xl)];
+    @apply md:mx-auto;
+  }
+
+  .content {
+    @apply w-full;
+  }
+
+  /* Optional: Add smooth scrolling to the whole page */
+  html {
+    scroll-behavior: smooth;
+  }
+</style>

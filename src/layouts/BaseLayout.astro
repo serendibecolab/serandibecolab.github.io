@@ -1,0 +1,27 @@
+---
+import YukinaConfig from "../../yukina.config";
+import BaseHead from "../components/BaseHead.astro";
+---
+
+<html lang={YukinaConfig.locale} class="dark">
+  <BaseHead />
+  <body class="overflow-y-hidden" style="background-color: var(--background-color);">
+    <div class="falling-elements-container">
+      <div class="falling-element element-1"></div>
+      <div class="falling-element element-2"></div>
+      <div class="falling-element element-3"></div>
+      <div class="falling-element element-4"></div>
+      <div class="falling-element element-5"></div>
+      <div class="falling-element element-6"></div>
+      <div class="falling-element element-7"></div>
+      <div class="falling-element element-8"></div>
+      <div class="falling-element element-9"></div>
+      <div class="falling-element element-10"></div>
+      <div class="falling-element element-11"></div>
+      <div class="falling-element element-12"></div>
+      <div class="falling-element element-13"></div>
+      <div class="falling-element element-14"></div>
+    </div>
+    <slot />
+  </body>
+</html>

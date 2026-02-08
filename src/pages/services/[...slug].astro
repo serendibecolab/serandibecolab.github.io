@@ -1,0 +1,33 @@
+---
+export const prerender = true;
+import { getCollection } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const serviceEntries = await getCollection('services');
+  return serviceEntries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+// Use the same image handling logic
+const bannerImage = entry.data.coverImage;
+const formattedImageLoop = entry.data.imageLoop?.map(url => ({ 
+  src: url, 
+  focalPoint: "center" 
+})) || [];
+---
+
+<PostLayout
+  title={entry.data.title}
+  subTitle={entry.data.description}
+  bannerImage={bannerImage}
+  bannerImageLoop={formattedImageLoop}
+>
+  <Content />
+</PostLayout>
